@@ -1,0 +1,34 @@
+
+CREATE TABLE klient (
+    klient_id INT AUTO_INCREMENT PRIMARY KEY,
+    nazvanie VARCHAR(100) NOT NULL UNIQUE,
+    gorod_klienta VARCHAR(50),
+    strana_klienta VARCHAR(50)
+);
+
+CREATE TABLE zakaz (
+    order_id VARCHAR(10) PRIMARY KEY,
+    data_zakaza DATE NOT NULL,
+    klient_id INT,
+    FOREIGN KEY (klient_id) REFERENCES klient(klient_id)
+);
+
+INSERT INTO klient (nazvanie, gorod_klienta, strana_klienta) VALUES
+('ООО "Вектор"', 'Москва', 'Россия'),
+('ИП Смирнов', 'Санкт-Петербург', 'Россия');
+
+INSERT INTO zakaz (order_id, data_zakaza, klient_id) VALUES
+('O-55', '2023-10-01', (SELECT klient_id FROM klient WHERE nazvanie = 'ООО "Вектор"')),
+('O-56', '2023-10-02', (SELECT klient_id FROM klient WHERE nazvanie = 'ИП Смирнов')),
+('O-57', '2023-10-02', (SELECT klient_id FROM klient WHERE nazvanie = 'ООО "Вектор"'));
+
+//ну и проверка
+SELECT 
+    z.order_id AS Order_ID,
+    z.data_zakaza AS Дата_заказа,
+    k.nazvanie AS Клиент,
+    k.gorod_klienta AS Город_клиента,
+    k.strana_klienta AS Страна_клиента
+FROM zakaz z
+JOIN klient k ON z.klient_id = k.klient_id
+ORDER BY z.order_id;
